@@ -15,6 +15,7 @@ class ModuleOptions {
 
         assertFalse(module.isCreatedAtStart)
         assertFalse(module.override)
+        assertFalse(module.ifNotProvided)
     }
 
     @Test
@@ -24,6 +25,7 @@ class ModuleOptions {
 
         assertFalse(module.isCreatedAtStart)
         assertTrue(module.override)
+        assertFalse(module.ifNotProvided)
     }
 
     @Test
@@ -33,12 +35,24 @@ class ModuleOptions {
 
         assertTrue(module.isCreatedAtStart)
         assertFalse(module.override)
+        assertFalse(module.ifNotProvided)
+    }
+
+
+    @Test
+    fun `module if provided options`() {
+        val module = module(ifNotProvided = true) {
+        }
+
+        assertFalse(module.isCreatedAtStart)
+        assertFalse(module.override)
+        assertTrue(module.ifNotProvided)
     }
 
     @Test
     fun `module definitions options inheritance`() {
 
-        val module = module(createdAtStart = true, override = true) {
+        val module = module(createdAtStart = true, override = true, ifNotProvided = true) {
             single { Simple.ComponentA() }
         }
 
@@ -48,10 +62,13 @@ class ModuleOptions {
 
         assertTrue(module.isCreatedAtStart)
         assertTrue(module.override)
+        assertTrue(module.ifNotProvided)
+
 
         val defA = app.getDefinition(Simple.ComponentA::class) ?: error("no definition found")
         assertTrue(defA.options.isCreatedAtStart)
         assertTrue(defA.options.override)
+        assertTrue(defA.options.ifNotProvided)
     }
 
     @Test
@@ -60,6 +77,7 @@ class ModuleOptions {
         val module = module {
             single(createdAtStart = true) { Simple.ComponentA() }
             single(override = true) { Simple.ComponentB(get()) }
+            single(ifNotProvided = true) { Simple.ComponentC(get()) }
         }
 
         val app = koinApplication {
@@ -68,13 +86,21 @@ class ModuleOptions {
 
         assertFalse(module.isCreatedAtStart)
         assertFalse(module.override)
+        assertFalse(module.ifNotProvided)
 
         val defA = app.getDefinition(Simple.ComponentA::class) ?: error("no definition found")
         assertTrue(defA.options.isCreatedAtStart)
         assertFalse(defA.options.override)
+        assertFalse(defA.options.ifNotProvided)
 
         val defB = app.getDefinition(Simple.ComponentB::class) ?: error("no definition found")
         assertFalse(defB.options.isCreatedAtStart)
         assertTrue(defB.options.override)
+        assertFalse(defB.options.ifNotProvided)
+
+        val defC = app.getDefinition(Simple.ComponentC::class) ?: error("no definition found")
+        assertFalse(defC.options.isCreatedAtStart)
+        assertFalse(defC.options.override)
+        assertTrue(defC.options.ifNotProvided)
     }
 }

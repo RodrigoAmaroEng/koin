@@ -36,7 +36,7 @@ inline fun <reified T : ViewModel> Module.viewModel(
     override: Boolean = false,
     noinline definition: Definition<T>
 ) {
-    factory(qualifier, override, definition).setIsViewModel()
+    factory(qualifier, override, definition = definition).setIsViewModel()
 }
 
 @Deprecated("ViewModel definition can't be used in a scope", level = DeprecationLevel.ERROR)

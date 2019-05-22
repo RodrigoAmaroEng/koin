@@ -23,11 +23,12 @@ typealias ModuleDeclaration = Module.() -> Unit
  * Define a Module
  * @param createdAtStart
  * @param override
+ * @param ifNotProvided
  *
  * @author Arnaud Giuliani
  */
-fun module(createdAtStart: Boolean = false, override: Boolean = false, moduleDeclaration: ModuleDeclaration): Module {
-    val module = Module(createdAtStart, override)
+fun module(createdAtStart: Boolean = false, override: Boolean = false, ifNotProvided: Boolean = false, moduleDeclaration: ModuleDeclaration): Module {
+    val module = Module(createdAtStart, override, ifNotProvided)
     moduleDeclaration(module)
     return module
 }

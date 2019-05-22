@@ -141,7 +141,7 @@ class BeanRegistry {
 
     private fun HashSet<BeanDefinition<*>>.addDefinition(definition: BeanDefinition<*>) {
         val added = add(definition)
-        if (!added && !definition.options.override) {
+        if (!added && !definition.options.override && !definition.options.ifNotProvided) {
             throw DefinitionOverrideException("Already existing definition or try to override an existing one: $definition")
         }
     }
@@ -198,7 +198,9 @@ class BeanRegistry {
 
     private fun saveDefinitionForName(definition: BeanDefinition<*>) {
         definition.qualifier?.let {
-            if (definitionsNames[it.toString()] != null && !definition.options.override) {
+            if (definitionsNames[it.toString()] != null && definition.options.ifNotProvided) {
+                return
+            } else if (definitionsNames[it.toString()] != null && !definition.options.override) {
                 throw DefinitionOverrideException("Already existing definition or try to override an existing one with qualifier '$it' with $definition but has already registered ${definitionsNames[it.toString()]}")
             } else {
                 definitionsNames[it.toString()] = definition
@@ -215,10 +217,10 @@ class BeanRegistry {
      * @param clazz
      */
     fun findDefinition(
-        qualifier: Qualifier? = null,
-        clazz: KClass<*>
-    ): BeanDefinition<*>?{
-        return if (qualifier != null){
+            qualifier: Qualifier? = null,
+            clazz: KClass<*>
+    ): BeanDefinition<*>? {
+        return if (qualifier != null) {
             findDefinitionByName(qualifier.toString())
         } else {
             findDefinitionByType(clazz) ?: findDefinitionBySecondaryType(clazz)

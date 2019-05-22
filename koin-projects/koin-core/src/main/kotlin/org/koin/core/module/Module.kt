@@ -30,7 +30,8 @@ import org.koin.dsl.ScopeSet
  */
 class Module(
     internal val isCreatedAtStart: Boolean,
-    internal val override: Boolean
+    internal val override: Boolean,
+    internal val ifNotProvided: Boolean
 ) {
     internal val definitions = arrayListOf<BeanDefinition<*>>()
     internal val scopes = arrayListOf<ScopeSet>()
@@ -55,22 +56,25 @@ class Module(
      * @param qualifier
      * @param createdAtStart
      * @param override
+     * @param ifNotProvided
      * @param definition - definition function
      */
     inline fun <reified T> single(
         qualifier: Qualifier? = null,
         createdAtStart: Boolean = false,
         override: Boolean = false,
+        ifNotProvided: Boolean = false,
         noinline definition: Definition<T>
     ): BeanDefinition<T> {
         val beanDefinition = DefinitionFactory.createSingle(qualifier, definition)
-        declareDefinition(beanDefinition, Options(createdAtStart, override))
+        declareDefinition(beanDefinition, Options(createdAtStart, override, ifNotProvided))
         return beanDefinition
     }
 
     private fun BeanDefinition<*>.updateOptions(options: Options) {
         this.options.isCreatedAtStart = options.isCreatedAtStart || isCreatedAtStart
         this.options.override = options.override || override
+        this.options.ifNotProvided = options.ifNotProvided || ifNotProvided
     }
 
     /**
@@ -91,10 +95,11 @@ class Module(
     inline fun <reified T> factory(
         qualifier: Qualifier? = null,
         override: Boolean = false,
+        ifNotProvided: Boolean = false,
         noinline definition: Definition<T>
     ): BeanDefinition<T> {
         val beanDefinition = DefinitionFactory.createFactory(qualifier, definition)
-        declareDefinition(beanDefinition, Options(override = override))
+        declareDefinition(beanDefinition, Options(override = override, ifNotProvided = ifNotProvided))
         return beanDefinition
     }
 

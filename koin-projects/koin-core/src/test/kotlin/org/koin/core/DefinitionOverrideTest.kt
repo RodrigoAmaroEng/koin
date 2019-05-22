@@ -41,4 +41,19 @@ class DefinitionOverrideTest {
         app.assertDefinitionsCount(1)
         assertTrue(app.koin.get<Simple.ComponentInterface1>(named("DEF")) is Simple.Component1)
     }
+
+    @Test
+    fun `keep first bean if its already provided`() {
+        val app = koinApplication {
+            modules(
+                    module {
+                        single<Simple.ComponentInterface1>(named("DEF")) { Simple.Component2() }
+                        single<Simple.ComponentInterface1>(named("DEF"), ifNotProvided = true) { Simple.Component1() }
+                    }
+            )
+        }
+
+        app.assertDefinitionsCount(1)
+        assertTrue(app.koin.get<Simple.ComponentInterface1>(named("DEF")) is Simple.Component2)
+    }
 }

@@ -32,18 +32,18 @@ import org.koin.dsl.ScopeSet
  * @param override - allow definition override
  */
 inline fun <reified T : ViewModel> Module.viewModel(
-    qualifier: Qualifier? = null,
-    override: Boolean = false,
-    noinline definition: Definition<T>
+        qualifier: Qualifier? = null,
+        override: Boolean = false,
+        noinline definition: Definition<T>
 ) {
-    factory(qualifier, override, definition).setIsViewModel()
+    factory(qualifier, override, definition = definition).setIsViewModel()
 }
 
 @Deprecated("ViewModel definition can't be used in a scope", level = DeprecationLevel.ERROR)
 inline fun <reified T : ViewModel> ScopeSet.viewModel(
-    qualifier: Qualifier? = null,
-    override: Boolean = false,
-    noinline definition: Definition<T>
+        qualifier: Qualifier? = null,
+        override: Boolean = false,
+        noinline definition: Definition<T>
 ) {
     error("A ViewModel can't be decalred in a scope")
 }
